@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in · BillSmart — Billing & Inventory for Retail</title>
+<meta name="description" content="Sign in to BillSmart — fast POS billing, live stock, and sales reports for your retail store.">
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+<link href="{{ url_for('static', filename='vendor/fonts.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/bootstrap-icons.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}?v=2" rel="stylesheet">
+</head>
+<body class="auth-page billsmart-auth">
+{% include '_splash.html' %}
+<section class="auth-visual" aria-hidden="false">
+<div class="auth-mesh" aria-hidden="true"></div>
+<div class="auth-brand"><img class="brand-mark-img" src="{{ url_for('static', filename='images/billsmart-mark.svg') }}" alt="BillSmart logo" width="34" height="34"><span><strong>BillSmart</strong><small>Smart Billing &amp; Inventory</small></span></div>
+<div class="auth-copy">
+<p class="eyebrow light">SMART BILLING &amp; INVENTORY</p>
+<h1>Bill fast.<br>Stock smart.</h1>
+<p class="auth-lede">BillSmart brings POS billing, live stock levels, and sales reports into one calm workspace built for retail counters.</p>
+<div class="feature-list">
+<span><i class="bi bi-check2-circle"></i> Lightning POS checkout with BS- invoices</span>
+<span><i class="bi bi-check2-circle"></i> Real-time stock, low-stock &amp; expiry alerts</span>
+<span><i class="bi bi-check2-circle"></i> Revenue, profit &amp; top-category insights</span>
+</div>
+</div>
+<div class="bill-preview" aria-hidden="true">
+<div class="bill-card">
+<div class="bill-card-head"><span class="bill-dot"></span><span>BS-20260314-A1B2C3</span><em>Paid</em></div>
+<div class="bill-lines"><i></i><i></i><i class="short"></i></div>
+<div class="bill-total"><span>Total</span><strong>&#8377;1,240.00</strong></div>
+</div>
+<div class="bill-stats">
+<div><i class="bi bi-receipt"></i><span>POS ready</span></div>
+<div><i class="bi bi-box-seam"></i><span>Stock synced</span></div>
+<div><i class="bi bi-graph-up-arrow"></i><span>Reports live</span></div>
+</div>
+</div>
+<p class="auth-visual-foot">Powered by BillSmart &middot; Secure sign-in</p>
+</section>
+<section class="auth-panel">
+<div class="auth-card">
+<div class="mobile-logo"><img class="brand-mark-img" src="{{ url_for('static', filename='images/billsmart-mark.svg') }}" alt="BillSmart logo" width="32" height="32"> BillSmart</div>
+<p class="eyebrow">WELCOME BACK</p>
+<h2>Sign in to BillSmart</h2>
+<p class="muted">Access your billing workspace to start selling.</p>
+{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="inline-alert {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+<form method="post" class="form-stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<label>Email or username<input name="identity" required autofocus autocomplete="username" placeholder="you@example.com"></label>
+<label>Password<div class="password-field"><input type="password" name="password" id="password" required autocomplete="current-password" placeholder="Enter your password"><button type="button" class="password-toggle" data-target="password" aria-label="Show password"><i class="bi bi-eye"></i></button></div></label>
+<div class="form-row between"><label class="check-label"><input type="checkbox" name="remember"> Remember me</label><a class="text-link" href="mailto:admin@billsmart.local?subject=BillSmart%20password%20reset">Forgot password?</a></div>
+<button class="btn primary full" type="submit">Sign in to BillSmart <i class="bi bi-arrow-right"></i></button>
+</form>
+<div class="demo-hint"><i class="bi bi-info-circle"></i><span>Demo access &mdash; username <strong>admin</strong> / password <strong>Admin@123</strong></span></div>
+<p class="auth-footer">Don&rsquo;t have an account? <a href="{{ url_for('register') }}">Create one</a></p>
+<p class="auth-secure"><i class="bi bi-shield-check"></i> Protected with hashed passwords &amp; role-based access.</p>
+</div>
+</section>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

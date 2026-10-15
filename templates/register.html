@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create account · BillSmart — Billing & Inventory for Retail</title>
+<meta name="description" content="Create your BillSmart staff account — POS billing, stock control, and reports for retail teams.">
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+<link href="{{ url_for('static', filename='vendor/fonts.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/bootstrap-icons.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}?v=2" rel="stylesheet">
+</head>
+<body class="auth-page billsmart-auth">
+{% include '_splash.html' %}
+<section class="auth-visual compact" aria-hidden="false">
+<div class="auth-mesh" aria-hidden="true"></div>
+<div class="auth-brand"><img class="brand-mark-img" src="{{ url_for('static', filename='images/billsmart-mark.svg') }}" alt="BillSmart logo" width="34" height="34"><span><strong>BillSmart</strong><small>Smart Billing &amp; Inventory</small></span></div>
+<div class="auth-copy">
+<p class="eyebrow light">JOIN BILLSMART</p>
+<h1>Sell smarter from day one.</h1>
+<p class="auth-lede">Create a staff account to bill at the counter, track every unit, and see what your store earns &mdash; all in one place.</p>
+<div class="feature-list">
+<span><i class="bi bi-check2-circle"></i> Counter-ready billing in seconds</span>
+<span><i class="bi bi-check2-circle"></i> BS- SKUs with expiry &amp; threshold tracking</span>
+<span><i class="bi bi-check2-circle"></i> Customers, suppliers &amp; invoices connected</span>
+</div>
+</div>
+<p class="auth-visual-foot">Powered by BillSmart &middot; Free for small teams</p>
+</section>
+<section class="auth-panel">
+<div class="auth-card">
+<div class="mobile-logo"><img class="brand-mark-img" src="{{ url_for('static', filename='images/billsmart-mark.svg') }}" alt="BillSmart logo" width="32" height="32"> BillSmart</div>
+<p class="eyebrow">GET STARTED</p>
+<h2>Create your BillSmart account</h2>
+<p class="muted">You&rsquo;ll join as a staff member. Admins can update roles later.</p>
+{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="inline-alert {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+<form method="post" class="form-stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<label>Full name / username<input name="username" required minlength="2" autocomplete="username" placeholder="e.g. Priya Shah"></label>
+<label>Email address<input type="email" name="email" required autocomplete="email" placeholder="you@example.com"></label>
+<label>Password<div class="password-field"><input type="password" name="password" id="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters"><button type="button" class="password-toggle" data-target="password" aria-label="Show password"><i class="bi bi-eye"></i></button></div></label>
+<label>Confirm password<input type="password" name="confirm_password" required minlength="8" autocomplete="new-password" placeholder="Repeat your password"></label>
+<button class="btn primary full" type="submit">Create BillSmart account <i class="bi bi-arrow-right"></i></button>
+</form>
+<p class="auth-footer">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+<p class="auth-secure"><i class="bi bi-shield-check"></i> Staff-only signup &middot; passwords never stored in plain text.</p>
+</div>
+</section>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}BillSmart{% endblock %} · Billing & Inventory for Retail</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link href="{{ url_for('static', filename='vendor/fonts.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons.min.css') }}" rel="stylesheet">
+  <style>:root{--font-display:"Plus Jakarta Sans",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--font-sans:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;--font-geist-sans:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--font-geist-mono:"JetBrains Mono",ui-monospace,Menlo,monospace}</style>
+  <link href="{{ url_for('static', filename='css/style.css') }}?v=2" rel="stylesheet">
+  <script>try{if(localStorage.getItem('billsmart-sidebar')==='collapsed'&&window.innerWidth>800){document.documentElement.classList.add('sidebar-collapsed');} }catch(e){}</script>
+  <style>html.sidebar-collapsed body .sidebar{width:72px;padding:20px 10px}html.sidebar-collapsed body .main-area{margin-left:72px;width:calc(100% - 72px)}html.sidebar-collapsed body .sidebar .brand strong,html.sidebar-collapsed body .sidebar .brand small,html.sidebar-collapsed body .sidebar .nav-label,html.sidebar-collapsed body .sidebar .nav-link span:not(.nav-badge),html.sidebar-collapsed body .sidebar .nav-profile span:not(.avatar),html.sidebar-collapsed body .sidebar .logout-link span{display:none}html.sidebar-collapsed body .sidebar .brand,html.sidebar-collapsed body .sidebar .nav-link,html.sidebar-collapsed body .sidebar .nav-profile,html.sidebar-collapsed body .sidebar .logout-link{justify-content:center}html.sidebar-collapsed body .sidebar .nav-badge{display:none}</style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+<script>try{if(document.documentElement.classList.contains('sidebar-collapsed')){document.body.classList.add('sidebar-collapsed');} }catch(e){}</script>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><img class="brand-mark-img" src="{{ url_for('static', filename='images/billsmart-mark.svg') }}" alt="BillSmart logo" width="35" height="35"><span><strong>BillSmart</strong><small>Smart Billing & Inventory</small></span></div>
+    <nav class="side-nav">
+      <div class="nav-label">Workspace</div>
+      <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}" title="Dashboard"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+      <a class="nav-link {% if request.endpoint in ['inventory','add_product','edit_product'] %}active{% endif %}" href="{{ url_for('inventory') }}" title="Inventory"><i class="bi bi-box-seam"></i><span>Inventory</span></a>
+      <a class="nav-link {% if request.endpoint == 'billing' %}active{% endif %}" href="{{ url_for('billing') }}" title="Billing / POS"><i class="bi bi-receipt"></i><span>Billing / POS</span></a>
+      <a class="nav-link {% if request.endpoint in ['sales','invoice'] %}active{% endif %}" href="{{ url_for('sales') }}" title="Sales"><i class="bi bi-graph-up-arrow"></i><span>Sales</span></a>
+      <div class="nav-label">Management</div>
+      <a class="nav-link {% if request.endpoint in ['customers','edit_customer'] %}active{% endif %}" href="{{ url_for('customers') }}" title="Customers"><i class="bi bi-people"></i><span>Customers</span></a>
+      <a class="nav-link {% if request.endpoint in ['suppliers','edit_supplier'] %}active{% endif %}" href="{{ url_for('suppliers') }}" title="Suppliers"><i class="bi bi-truck"></i><span>Suppliers</span></a>
+      <a class="nav-link {% if request.endpoint == 'reports' %}active{% endif %}" href="{{ url_for('reports') }}" title="Reports"><i class="bi bi-bar-chart"></i><span>Reports</span></a>
+      <div class="nav-label">System</div>
+      <a class="nav-link {% if request.endpoint == 'notifications' %}active{% endif %} {% if unread_count %}has-unread{% endif %}" href="{{ url_for('notifications') }}" title="Notifications{% if unread_count %} ({{ unread_count }} unread){% endif %}"><i class="bi bi-bell"></i><span>Notifications</span> {% if unread_count %}<span class="nav-badge">{{ unread_count }}</span>{% endif %}</a>
+      {% if current_user.role == 'admin' %}<a class="nav-link {% if request.endpoint in ['users','new_user','edit_user'] %}active{% endif %}" href="{{ url_for('users') }}" title="Users"><i class="bi bi-shield-check"></i><span>Users</span></a><a class="nav-link {% if request.endpoint == 'settings' %}active{% endif %}" href="{{ url_for('settings') }}" title="Settings"><i class="bi bi-sliders2"></i><span>Settings</span></a>{% endif %}
+      <div class="nav-label">Account</div>
+      <div class="nav-profile"><span class="avatar">{{ current_user.username[0]|upper }}</span><span><strong>{{ current_user.username }}</strong><small>{{ current_user.role|capitalize }}</small></span></div>
+      <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="nav-link logout-link" type="submit" title="Logout" style="width:100%;border:0;background:transparent;cursor:pointer;text-align:left;"><i class="bi bi-box-arrow-left"></i><span>Logout</span></button></form>
+    </nav>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <main class="main-area">
+    <header class="topbar"><button class="mobile-menu" id="menuToggle" aria-expanded="false" aria-controls="sidebar" title="Toggle sidebar"><i class="bi bi-list"></i></button><form class="global-search" action="{{ url_for('inventory') }}"><i class="bi bi-search"></i><input name="q" placeholder="Search products, SKU..." /></form><div class="top-actions"><button class="icon-btn" id="themeToggle" title="Toggle theme"><i class="bi bi-moon-stars"></i></button><a class="icon-btn notification-btn" href="{{ url_for('notifications') }}"><i class="bi bi-bell"></i>{% if unread_count %}<span>{{ unread_count }}</span>{% endif %}</a><div class="top-user"><span class="avatar small">{{ current_user.username[0]|upper }}</span><span><strong>{{ current_user.username }}</strong><small>{{ current_user.role|capitalize }}</small></span></div></div></header>
+    <div class="content-wrap">{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="toast-stack">{% for category, message in messages %}<div class="toast-message {{ category }}"><i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}x-circle{% else %}info-circle{% endif %}"></i>{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}{% block content %}{% endblock %}</div>
+  </main>
+</div>
+<script>window.CSRF_TOKEN={{ csrf_token|tojson }};</script><script src="{{ url_for('static', filename='js/app.js') }}"></script>{% block scripts %}{% endblock %}
+</body></html>

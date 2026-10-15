@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.vscode/
+instance/
+*.db
+secret.key
+product_images/*
+!product_images/.gitkeep
+dist/
+build/
+installer-output/
+*.spec
+!billsmart.spec
+static/images/products/*
+!static/images/products/.gitkeep

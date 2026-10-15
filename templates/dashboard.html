@@ -1,0 +1,244 @@
+{% extends 'base.html' %}{% block title %}Dashboard{% endblock %}{% block content %}
+<section class="dash-hero dash-enter" style="--i:0">
+  <div class="auth-mesh" aria-hidden="true"></div>
+  <div class="dash-hero-copy">
+    <p class="eyebrow light">{% if now.hour < 12 %}Good morning{% elif now.hour < 17 %}Good afternoon{% else %}Good evening{% endif %} &middot; {{ now.strftime('%a, %d %b') }}</p>
+    <h1>Namaste, {{ current_user.username }} — here's your store today.</h1>
+    <div class="dash-chips">
+      <span class="dash-chip"><i class="bi bi-box-seam"></i> {{ products|length }} products</span>
+      <span class="dash-chip warn"><i class="bi bi-exclamation-triangle"></i> {{ low_stock|length }} low</span>
+      <span class="dash-chip danger"><i class="bi bi-x-octagon"></i> {{ out_stock }} out &middot; {{ expired_count }} expired</span>
+    </div>
+  </div>
+  <div class="dash-hero-actions">
+    <a class="btn primary" href="{{ url_for('billing') }}"><i class="bi bi-plus-lg"></i> New sale</a>
+    <a class="btn hero-ghost" href="{{ url_for('add_product') }}"><i class="bi bi-box-seam"></i> Add product</a>
+    <a class="btn hero-ghost" href="{{ url_for('reports') }}"><i class="bi bi-bar-chart"></i> Reports</a>
+  </div>
+</section>
+
+<div class="kpi-grid">
+  <div class="kpi-card kpi-trend dash-enter" style="--i:1">
+    <span class="kpi-icon blue"><i class="bi bi-cash-stack"></i></span>
+    <div>
+      <small>Total Sales</small>
+      <strong data-count="{{ total_sales }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(total_sales) }}</strong>
+      {% if sales_change >= 0 %}
+      <span class="trend up"><i class="bi bi-arrow-up-short"></i> {{ '%.1f'|format(sales_change) }}% <span>vs last month</span></span>
+      {% else %}
+      <span class="trend down"><i class="bi bi-arrow-down-short"></i> {{ '%.1f'|format(sales_change|abs) }}% <span>vs last month</span></span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="kpi-card kpi-trend dash-enter" style="--i:2">
+    <span class="kpi-icon purple"><i class="bi bi-bag"></i></span>
+    <div>
+      <small>Total Purchases</small>
+      <strong data-count="{{ total_purchases }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(total_purchases) }}</strong>
+      {% if purchases_change >= 0 %}
+      <span class="trend up"><i class="bi bi-arrow-up-short"></i> {{ '%.1f'|format(purchases_change) }}% <span>vs last month</span></span>
+      {% else %}
+      <span class="trend down"><i class="bi bi-arrow-down-short"></i> {{ '%.1f'|format(purchases_change|abs) }}% <span>vs last month</span></span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="kpi-card kpi-trend dash-enter" style="--i:3">
+    <span class="kpi-icon green"><i class="bi bi-graph-up-arrow"></i></span>
+    <div>
+      <small>Total Profit</small>
+      <strong data-count="{{ total_profit }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(total_profit) }}</strong>
+      {% if profit_change >= 0 %}
+      <span class="trend up"><i class="bi bi-arrow-up-short"></i> {{ '%.1f'|format(profit_change) }}% <span>vs last month</span></span>
+      {% else %}
+      <span class="trend down"><i class="bi bi-arrow-down-short"></i> {{ '%.1f'|format(profit_change|abs) }}% <span>vs last month</span></span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="kpi-card kpi-trend dash-enter" style="--i:4">
+    <span class="kpi-icon amber"><i class="bi bi-exclamation-triangle"></i></span>
+    <div>
+      <small>Low Stock Items</small>
+      <strong data-count="{{ low_stock|length }}" data-decimals="0">{{ low_stock|length }}</strong>
+      <a class="trend neutral" href="{{ url_for('inventory', status='low') }}" style="color:var(--warning);text-decoration:none;">View All <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+  </div>
+  <div class="kpi-card kpi-trend dash-enter" style="--i:5">
+    <span class="kpi-icon red"><i class="bi bi-hourglass-split"></i></span>
+    <div>
+      <small>At Risk Value</small>
+      <strong data-count="{{ at_risk_value }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(at_risk_value) }}</strong>
+      <span class="trend down" style="color:var(--danger)">{{ expiring_30_count }} items ≤30d • {{ expired_count }} expired</span>
+    </div>
+  </div>
+</div>
+
+<div class="sales-qa-grid">
+  <section class="panel chart-panel dash-enter" style="--i:6">
+    <div class="panel-head">
+      <div><h3>Sales Overview</h3><p class="muted">Revenue over time</p></div>
+      <select id="salesRange" class="soft-label" onchange="location.href='?range='+this.value" style="border:1px solid var(--line);cursor:pointer;"><option value="week" {% if sales_range=='week' %}selected{% endif %}>Last 7 Days</option><option value="month" {% if sales_range=='month' %}selected{% endif %}>Last 30 Days</option><option value="year" {% if sales_range=='year' %}selected{% endif %}>Last 12 Months</option></select>
+    </div>
+    {% if sales_data and sales_data|sum > 0 %}
+    <canvas id="salesChart" height="110"></canvas>
+    {% else %}
+    <div class="empty-state small"><i class="bi bi-bar-chart"></i><strong>No sales data yet.</strong><span>Complete your first sale to see trends here.</span></div>
+    {% endif %}
+  </section>
+  <section class="panel qa-rail dash-enter" style="--i:7" aria-label="Quick actions">
+    <div class="panel-head compact">
+      <div><h3>Quick Actions</h3></div>
+    </div>
+    <div class="qa-tiles">
+      <a class="qa-tile" href="{{ url_for('billing') }}">
+        <span class="kpi-icon blue sm"><i class="bi bi-receipt"></i></span>
+        <strong>New Sale</strong><small>Create invoice</small>
+      </a>
+      <a class="qa-tile" href="{{ url_for('add_product') }}">
+        <span class="kpi-icon green sm"><i class="bi bi-box-seam"></i></span>
+        <strong>Add Product</strong><small>Update inventory</small>
+      </a>
+      <a class="qa-tile" href="{{ url_for('customers') }}">
+        <span class="kpi-icon purple sm"><i class="bi bi-people"></i></span>
+        <strong>Add Customer</strong><small>Manage customers</small>
+      </a>
+      <a class="qa-tile" href="{{ url_for('suppliers') }}">
+        <span class="kpi-icon amber sm"><i class="bi bi-truck"></i></span>
+        <strong>Add Purchase</strong><small>Record purchase</small>
+      </a>
+      <a class="qa-tile qa-report" href="{{ url_for('reports') }}">
+        <span class="kpi-icon blue sm"><i class="bi bi-bar-chart"></i></span>
+        <span class="grow"><strong>Generate Report</strong><small>View business reports</small></span>
+      </a>
+    </div>
+  </section>
+</div>
+
+<div class="dashboard-grid lower">
+  <section class="panel donut-panel dash-enter" style="--i:8">
+    <div class="panel-head">
+      <div><h3>Top Selling Categories</h3><p class="muted">Revenue contribution</p></div>
+    </div>
+    {% if categories %}
+    <div class="donut-wrap">
+      <div class="donut-chart">
+        <canvas id="categoryChart" height="205"></canvas>
+        <div class="donut-center">
+          <small>Total Sales</small>
+          <strong>₹{{ '%.2f'|format(category_total) }}</strong>
+        </div>
+      </div>
+      <div class="category-legend">
+        {% for cat in categories %}
+        <div class="legend-row">
+          <span class="legend-dot" style="background: {{ ['#3157d5','#7257d8','#27a879','#e6a23c','#d86b85','#5a708d'][loop.index0 % 6] }}"></span>
+          <span class="legend-label">{{ cat.label }}</span>
+          <span class="legend-value">₹{{ '%.0f'|format(cat.value) }} ({{ '%.0f'|format((cat.value / category_total * 100) if category_total else 0) }}%)</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state small"><i class="bi bi-pie-chart"></i><strong>No category data yet.</strong></div>
+    {% endif %}
+  </section>
+  <section class="panel dash-enter" style="--i:9">
+    <div class="panel-head">
+      <div><h3>Top Products</h3><p class="muted">Best sellers by quantity</p></div>
+      <a class="text-link" href="{{ url_for('reports') }}">Reports <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    {% if top_products %}
+    {% set max_qty = top_products[0][1] %}
+    <div class="leader-list">
+      {% for name, qty in top_products %}
+      <div class="leader-row">
+        <span class="leader-rank">{{ loop.index }}</span>
+        <span class="grow"><strong>{{ name }}</strong><span class="leader-bar"><i style="width:{{ ((qty / max_qty * 100) if max_qty else 0)|round(0) }}%"></i></span></span>
+        <strong class="leader-qty">{{ qty }} sold</strong>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state small"><i class="bi bi-trophy"></i><strong>No sales yet.</strong><span>Your best sellers will appear here.</span><a class="btn secondary" href="{{ url_for('billing') }}">Create first sale</a></div>
+    {% endif %}
+  </section>
+</div>
+
+<div class="dashboard-grid lower">
+  <section class="panel dash-enter" style="--i:10">
+    <div class="panel-head">
+      <div><h3>Low Stock Alerts</h3><p class="muted">Products approaching their threshold</p></div>
+      <a class="text-link" href="{{ url_for('inventory', status='low') }}">View All <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    {% if low_stock %}
+    <div class="mini-list">
+      {% for product in low_stock %}
+      <div class="mini-row">
+        {% if product.image %}
+        <img class="product-thumb-img" src="{{ product_image_url(product.image) }}" alt="{{ product.name }}" width="56" height="56" loading="lazy">
+        {% else %}
+        <span class="product-thumb" style="width:56px;height:56px;"><i class="bi bi-box"></i></span>
+        {% endif %}
+        <span class="grow"><strong>{{ product.name }}</strong><small>Stock: {{ product.quantity }}</small></span>
+        <span class="pill low-stock">Low Stock</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state small"><i class="bi bi-check2-circle"></i><strong>Inventory looks healthy.</strong><span>No low-stock products right now.</span></div>
+    {% endif %}
+  </section>
+  <section class="panel dash-enter" style="--i:11">
+    <div class="panel-head">
+      <div><h3>Recent Transactions</h3><p class="muted">Latest completed invoices</p></div>
+      <a class="text-link" href="{{ url_for('sales') }}">View All <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    {% if sales %}
+    <div class="mini-list">
+      {% for sale in sales %}
+      <div class="mini-row">
+        <span class="invoice-icon"><i class="bi bi-receipt"></i></span>
+        <span class="grow"><strong>{{ sale.invoice_number }}</strong><small>{{ sale.payment_method }} • {{ sale.created_at.strftime('%d %b, %H:%M') }}</small></span>
+        <span class="grow" style="text-align:right;max-width:90px;"><small class="muted">{{ sale.customer.name if sale.customer else 'Cash Sale' }}</small></span>
+        <small style="font-size:11px;color:var(--muted);min-width:70px;text-align:right;">{% if sale.created_at.date() == now.date() %}{{ sale.created_at.strftime('%I:%M %p') }}{% elif (now - sale.created_at).days == 1 %}Yesterday{% else %}{{ sale.created_at.strftime('%d %b') }}{% endif %}</small>
+        <strong style="min-width:70px;text-align:right;color:var(--success);">₹{{ '%.2f'|format(sale.total_amount) }}</strong>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state small"><i class="bi bi-receipt"></i><strong>No transactions yet.</strong><a class="btn secondary" href="{{ url_for('billing') }}">Create first sale</a></div>
+    {% endif %}
+</section>
+</div>
+
+<div class="dashboard-grid" style="grid-template-columns:1fr">
+  <section class="panel dash-enter" style="--i:12">
+    <div class="panel-head">
+      <div><h3>Expiry Alerts</h3><p class="muted">Items expiring within 30 days</p></div>
+      <a class="text-link" href="{{ url_for('inventory', status='expiring') }}">View All <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    {% if expiring_30 %}
+    <div class="mini-list">
+      {% for product in expiring_30 %}
+      <div class="mini-row">
+        {% if product.image %}
+        <img class="product-thumb-img" src="{{ product_image_url(product.image) }}" alt="{{ product.name }}" width="56" height="56" loading="lazy">
+        {% else %}
+        <span class="product-thumb" style="width:56px;height:56px;"><i class="bi bi-box"></i></span>
+        {% endif %}
+        <span class="grow"><strong>{{ product.name }}</strong><small>Expires {{ product.expiry_date.strftime('%d %b %Y') }} • {{ product.days_to_expiry }}d {% if product.days_to_expiry < 0 %}overdue{% else %}left{% endif %}</small></span>
+        {% if product.expiry_status == 'Expired' %}
+        <span class="pill exp-red"><span class="exp-dot" aria-hidden="true"></span>Expired</span>
+        {% elif product.days_to_expiry <= 7 %}
+        <span class="pill exp-amber"><span class="exp-dot" aria-hidden="true"></span>{{ product.days_to_expiry }}d</span>
+        {% else %}
+        <span class="pill exp-yellow"><span class="exp-dot" aria-hidden="true"></span>{{ product.days_to_expiry }}d</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state small"><i class="bi bi-calendar-check"></i><strong>No upcoming expiries.</strong><span>Stock is fresh — no items expiring within 30 days.</span></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}{% block scripts %}<script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script><script>window.salesData={{ sales_data|tojson }};window.salesLabels={{ sales_labels|tojson }};window.categoryData={{ categories|tojson }};window.categoryTotal={{ category_total|tojson }};</script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}
