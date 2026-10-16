@@ -130,7 +130,7 @@
       <div class="category-legend">
         {% for cat in categories %}
         <div class="legend-row">
-          <span class="legend-dot" style="background: {{ ['#3157d5','#7257d8','#27a879','#e6a23c','#d86b85','#5a708d'][loop.index0 % 6] }}"></span>
+          <span class="legend-dot" aria-hidden="true"></span>
           <span class="legend-label">{{ cat.label }}</span>
           <span class="legend-value">₹{{ '%.0f'|format(cat.value) }} ({{ '%.0f'|format((cat.value / category_total * 100) if category_total else 0) }}%)</span>
         </div>

@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var t=localStorage.getItem('billsmart-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=t;if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}</script>
 <title>Sign in · BillSmart — Billing & Inventory for Retail</title>
 <meta name="description" content="Sign in to BillSmart — fast POS billing, live stock, and sales reports for your retail store.">
 <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
 <link href="{{ url_for('static', filename='vendor/fonts.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='vendor/bootstrap-icons.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/style.css') }}?v=2" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}?v=5" rel="stylesheet">
 </head>
 <body class="auth-page billsmart-auth">
 {% include '_splash.html' %}

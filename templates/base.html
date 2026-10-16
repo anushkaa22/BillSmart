@@ -1,13 +1,14 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <script>try{var t=localStorage.getItem('billsmart-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=t;if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}</script>
   <title>{% block title %}BillSmart{% endblock %} · Billing & Inventory for Retail</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <link href="{{ url_for('static', filename='vendor/fonts.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='vendor/bootstrap-icons.min.css') }}" rel="stylesheet">
   <style>:root{--font-display:"Plus Jakarta Sans",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--font-sans:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;--font-geist-sans:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;--font-geist-mono:"JetBrains Mono",ui-monospace,Menlo,monospace}</style>
-  <link href="{{ url_for('static', filename='css/style.css') }}?v=2" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}?v=5" rel="stylesheet">
   <script>try{if(localStorage.getItem('billsmart-sidebar')==='collapsed'&&window.innerWidth>800){document.documentElement.classList.add('sidebar-collapsed');} }catch(e){}</script>
   <style>html.sidebar-collapsed body .sidebar{width:72px;padding:20px 10px}html.sidebar-collapsed body .main-area{margin-left:72px;width:calc(100% - 72px)}html.sidebar-collapsed body .sidebar .brand strong,html.sidebar-collapsed body .sidebar .brand small,html.sidebar-collapsed body .sidebar .nav-label,html.sidebar-collapsed body .sidebar .nav-link span:not(.nav-badge),html.sidebar-collapsed body .sidebar .nav-profile span:not(.avatar),html.sidebar-collapsed body .sidebar .logout-link span{display:none}html.sidebar-collapsed body .sidebar .brand,html.sidebar-collapsed body .sidebar .nav-link,html.sidebar-collapsed body .sidebar .nav-profile,html.sidebar-collapsed body .sidebar .logout-link{justify-content:center}html.sidebar-collapsed body .sidebar .nav-badge{display:none}</style>
   {% block head %}{% endblock %}

@@ -6,18 +6,30 @@ document.addEventListener('DOMContentLoaded', () => {
   root.dataset.theme = initial;
   root.classList.toggle('dark', initial === 'dark');
   const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) themeToggle.addEventListener('click', () => {
+  function syncThemeIcon() {
+    if (!themeToggle) return;
     const isDark = root.classList.contains('dark');
-    const next = isDark ? 'light' : 'dark';
+    themeToggle.innerHTML = `<i class="bi bi-${isDark ? 'sun' : 'moon-stars'}"></i>`;
+    themeToggle.setAttribute('title', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  syncThemeIcon();
+  function applyTheme(next) {
     root.dataset.theme = next;
     root.classList.toggle('dark', next === 'dark');
     localStorage.setItem('billsmart-theme', next);
+    syncThemeIcon();
+    window.dispatchEvent(new CustomEvent('billsmart-theme', { detail: next }));
+  }
+  if (themeToggle) themeToggle.addEventListener('click', () => {
+    applyTheme(root.classList.contains('dark') ? 'light' : 'dark');
   });
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     if (!localStorage.getItem('billsmart-theme')) {
       const next = e.matches ? 'dark' : 'light';
       root.dataset.theme = next;
       root.classList.toggle('dark', next === 'dark');
+      syncThemeIcon();
+      window.dispatchEvent(new CustomEvent('billsmart-theme', { detail: next }));
     }
   });
   const menu = document.getElementById('menuToggle'), sidebar = document.getElementById('sidebar'), backdrop = document.getElementById('sidebarBackdrop');
