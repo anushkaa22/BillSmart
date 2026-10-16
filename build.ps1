@@ -7,7 +7,7 @@
 #>
 param(
   [switch]$Installer,
-  [string]$Python = "C:\Python311\python.exe"
+  [string]$Python = "python.exe"
 )
 
 $ErrorActionPreference = "Stop"
